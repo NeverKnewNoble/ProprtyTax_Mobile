@@ -1,6 +1,5 @@
-import {SignUpStructure } from "@/types/auth";
-import axios from "axios";
-import { siteURL} from "@/utils/config/site_details";
+import { SignUpStructure } from "@/types/auth";
+import { api } from "@/utils/config/api_client";
 
 
 // ** FUNTION TO SIGNUP A NEW USER FRAPPE CONNECTION
@@ -11,7 +10,7 @@ export async function Signup(signUpDetails: SignUpStructure): Promise<any> {
         console.log("signing up with", full_name, phone, email, password);
 
         //  Make API request to signup endpoint
-        const response = await axios.post(`${siteURL}/api/v2/method/property_collection.api.signup.signUp`, {
+        const response = await api.post("/api/v2/method/property_collection.api.signup.signUp", {
             full_name, 
             phone, 
             email, 
