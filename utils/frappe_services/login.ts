@@ -1,43 +1,35 @@
 import { LoginStructure } from "@/types/auth";
-import { siteURL } from "@/utils/config/site_details";
-import axios from "axios";
-
-let _sid = "";
-
-export function getFrappeHeaders(): Record<string, string> {
-  return _sid ? { Cookie: `sid=${_sid}` } : {};
-}
+import { api, clearSid, saveSid } from "@/utils/config/api_client";
 
 export function clearSession() {
-  _sid = "";
+  clearSid();
 }
 
 export async function Login(credentials: LoginStructure): Promise<any> {
   try {
     const { email, password } = credentials;
 
-    // Step 1: Standard Frappe login — gets session cookie
-    const sessionResponse = await axios.post(`${siteURL}/api/method/login`, {
+    // Step 1: Standard Frappe login — saves session sid
+    const sessionResponse = await api.post("/api/method/login", {
       usr: email,
       pwd: password,
     });
+    saveSid(sessionResponse.headers["set-cookie"]);
 
-    // Extract and save sid from Set-Cookie headers
-    const cookieHeaders = sessionResponse.headers["set-cookie"];
-    if (cookieHeaders) {
-      const raw = Array.isArray(cookieHeaders)
-        ? cookieHeaders.join(" ")
-        : cookieHeaders;
-      const sid = raw.match(/\bsid=([^;,\s]+)/)?.[1];
-      if (sid) _sid = sid;
-    }
-
-    // Step 2: Fetch full user profile using the session we just got
-    const userResponse = await axios.get(
-      `${siteURL}/api/resource/User/${encodeURIComponent(email)}`,
+    // Step 2: Fetch full user profile with the session we just got
+    const userResponse = await api.get(
+      `/api/resource/User/${encodeURIComponent(email)}`,
       {
-        params: { fields: JSON.stringify(["first_name", "last_name", "username", "full_name", "email", "name"]) },
-        headers: getFrappeHeaders(),
+        params: {
+          fields: JSON.stringify([
+            "first_name",
+            "last_name",
+            "username",
+            "full_name",
+            "email",
+            "name",
+          ]),
+        },
       }
     );
 

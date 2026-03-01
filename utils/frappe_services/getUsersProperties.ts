@@ -1,7 +1,5 @@
 import { UserProperty } from "@/types/property";
-import axios from "axios";
-import { getFrappeHeaders } from "./login";
-import { siteURL } from "../config/site_details";
+import { api } from "@/utils/config/api_client";
 
 export type GetPropertiesResult =
   | { success: true; properties: UserProperty[] }
@@ -9,12 +7,10 @@ export type GetPropertiesResult =
 
 export async function fetchUsersProperties(): Promise<GetPropertiesResult> {
   try {
-    const response = await axios.get(
-      `${siteURL}/api/v2/method/property_collection.api.users_properties.fetchUsersProperties`,
-      { headers: getFrappeHeaders() },
+    const response = await api.get(
+      "/api/v2/method/property_collection.api.users_properties.fetchUsersProperties"
     );
 
-    // Frappe wraps the return value inside response.data.data
     const payload = response.data?.data ?? response.data;
 
     if (payload?.success && Array.isArray(payload.properties)) {

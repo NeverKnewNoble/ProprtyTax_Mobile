@@ -1,7 +1,5 @@
 import { UserProperty } from "@/types/property";
-import axios from "axios";
-import { siteURL } from "@/utils/config/site_details";
-import { getFrappeHeaders } from "@/utils/frappe_services/login";
+import { api } from "@/utils/config/api_client";
 
 type FindPropertyParams = {
   search_term?: string;
@@ -17,12 +15,11 @@ export async function findProperty(
   params: FindPropertyParams
 ): Promise<FindPropertyResult> {
   try {
-    const response = await axios.get(
-      `${siteURL}/api/v2/method/property_collection.api.properties.findProperty`,
-      { params, headers: getFrappeHeaders() }
+    const response = await api.get(
+      "/api/v2/method/property_collection.api.properties.findProperty",
+      { params }
     );
 
-    // Frappe wraps our return value inside response.data.data
     const payload = response.data?.data ?? response.data;
 
     if (payload?.success && payload.property) {
@@ -38,4 +35,3 @@ export async function findProperty(
     return { success: false, message: err.message ?? "Network error" };
   }
 }
- 
