@@ -1,8 +1,7 @@
 import { api } from "@/utils/config/api_client";
+import { AddPropertyResult } from "@/types/addProperty";
 
-export type AddPropertyResult =
-  | { success: true; message: string }
-  | { success: false; message: string };
+export type { AddPropertyResult };
 
 export async function addPropertyToUser(
   user_email: string,

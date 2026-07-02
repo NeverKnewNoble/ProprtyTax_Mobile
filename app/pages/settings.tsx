@@ -2,7 +2,13 @@ import { useUser } from "@/contexts/UserContext";
 import { clearSession } from "@/utils/frappe_services/login";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+    StatusBar,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import TabBar from "../components/tab-bar";
 
@@ -16,13 +22,14 @@ export default function SettingsScreen() {
     : "—";
 
   const initials = user
-    ? `${user.first_name?.[0] ?? ""}${user.last_name?.[0] ?? ""}`.toUpperCase() || "?"
+    ? `${user.first_name?.[0] ?? ""}${user.last_name?.[0] ?? ""}`.toUpperCase() ||
+      "?"
     : "?";
 
   const profileRows = [
     { icon: "person-outline", label: "Full Name", value: fullName },
-    { icon: "at-outline",     label: "Username",  value: user?.username ?? "—" },
-    { icon: "mail-outline",   label: "Email",     value: user?.email ?? "—" }
+    { icon: "at-outline", label: "Username", value: user?.username ?? "—" },
+    { icon: "mail-outline", label: "Email", value: user?.email ?? "—" },
   ];
 
   const handleLogout = () => {
@@ -44,11 +51,12 @@ export default function SettingsScreen() {
       <View style={{ flex: 1 }}>
         <View style={styles.outerWrap}>
           <View style={styles.card}>
-
             {/* Avatar — straddles the top border */}
             <View style={styles.avatarWrap}>
               <View style={styles.avatar}>
-                <Text className="text-[30px] font-extrabold text-primary">{initials}</Text>
+                <Text className="text-[30px] font-extrabold text-primary">
+                  {initials}
+                </Text>
               </View>
             </View>
 
@@ -68,11 +76,17 @@ export default function SettingsScreen() {
                 <View
                   key={row.label}
                   className={`flex-row items-center px-4 py-3.5 gap-3 ${
-                    i < profileRows.length - 1 ? "border-b border-[#F1F5F9]" : ""
+                    i < profileRows.length - 1
+                      ? "border-b border-[#F1F5F9]"
+                      : ""
                   }`}
                 >
-                  <View className="w-[34px] h-[34px] rounded-[10px] bg-[#E6FAFA] items-center justify-center">
-                    <Ionicons name={row.icon as any} size={16} color="#00CEC8" />
+                  <View className="w-[34px] h-[34px] rounded-[10px] bg-[#2b2a33] items-center justify-center">
+                    <Ionicons
+                      name={row.icon as any}
+                      size={16}
+                      color="#b5cc3b"
+                    />
                   </View>
                   <View className="flex-1">
                     <Text className="text-[11px] text-slate-400 font-medium mb-0.5">
@@ -94,10 +108,11 @@ export default function SettingsScreen() {
                 activeOpacity={0.85}
               >
                 <Ionicons name="log-out-outline" size={18} color="#EF4444" />
-                <Text className="text-red-500 text-[15px] font-bold">Log Out</Text>
+                <Text className="text-red-500 text-[15px] font-bold">
+                  Log Out
+                </Text>
               </TouchableOpacity>
             </View>
-
           </View>
         </View>
       </View>

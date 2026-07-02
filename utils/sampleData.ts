@@ -1,11 +1,11 @@
-import { Property, PropertyType, FoundProperty } from "../types/property";
-import { QuickAction } from "../types/quickAction";
-import { Transaction } from "../types/transaction";
-import { SettingsGroup, ProfileRow } from "../types/settings";
-import { ChatMessage } from "../types/chat";
-import { Notification, NotifType } from "../types/notification";
-import { ContactInfo } from "../types/support";
-import { MobileNetwork } from "../types/payment";
+import { ChatMessage } from "@/types/chat";
+import { Notification, NotifType } from "@/types/notification";
+import { MobileNetwork } from "@/types/payment";
+import { FoundProperty, Property, PropertyType } from "@/types/property";
+import { QuickAction } from "@/types/quickAction";
+import { ProfileRow, SettingsGroup } from "@/types/settings";
+import { ContactInfo } from "@/types/support";
+import { Transaction } from "@/types/transaction";
 
 // ── Properties ─────────────────────────────────────────────────────
 export const properties: Property[] = [
@@ -62,9 +62,9 @@ export const properties: Property[] = [
 ];
 
 export const TYPE_STYLE: Record<PropertyType, { bg: string; text: string }> = {
-  Residential: { bg: "#E6FAFA", text: "#00CEC8" },
-  Commercial:  { bg: "#EEECFF", text: "#6C63FF" },
-  Vacation:    { bg: "#FEF3C7", text: "#D97706" },
+  Residential: { bg: "#2b2a33", text: "#00CEC8" },
+  Commercial: { bg: "#EEECFF", text: "#6C63FF" },
+  Vacation: { bg: "#FEF3C7", text: "#D97706" },
 };
 
 // ── Mock property for Add Property lookup ───────────────────────────
@@ -81,19 +81,82 @@ export const mockFoundProperty: FoundProperty = {
 
 // ── Quick Actions ───────────────────────────────────────────────────
 export const quickActions: QuickAction[] = [
-  { id: 1, name: "Pay Now",   icon: "card",                color: "#00CEC8", bg: "#E6FAFA" },
-  { id: 2, name: "Statement", icon: "document-text",       color: "#6C63FF", bg: "#EEECFF" },
-  { id: 3, name: "Support",   icon: "chatbubble-ellipses", color: "#F59E0B", bg: "#FEF3C7" },
-  { id: 4, name: "Settings",  icon: "settings",            color: "#64748B", bg: "#F1F5F9" },
+  { id: 1, name: "Pay Now", icon: "card", color: "#00CEC8", bg: "#2b2a33" },
+  {
+    id: 2,
+    name: "Statement",
+    icon: "document-text",
+    color: "#6C63FF",
+    bg: "#EEECFF",
+  },
+  {
+    id: 3,
+    name: "Support",
+    icon: "chatbubble-ellipses",
+    color: "#F59E0B",
+    bg: "#FEF3C7",
+  },
+  {
+    id: 4,
+    name: "Settings",
+    icon: "settings",
+    color: "#64748B",
+    bg: "#F1F5F9",
+  },
 ];
 
 // ── Transactions (list view) ────────────────────────────────────────
 export const transactions: Transaction[] = [
-  { id: 1, property: "Mountain Cabin", amount: "-₵3,200", date: "Feb 22, 2026", type: "Payment",   icon: "card",          color: "#22C55E", bg: "#DCFCE7" },
-  { id: 2, property: "Downtown Apt",   amount: "-₵1,850", date: "Feb 10, 2026", type: "Payment",   icon: "card",          color: "#22C55E", bg: "#DCFCE7" },
-  { id: 3, property: "Downtown Apt",   amount: "—",       date: "Feb 8, 2026",  type: "Statement", icon: "document-text", color: "#6C63FF", bg: "#EEECFF" },
-  { id: 4, property: "Sunset Villa",   amount: "-₵2,450", date: "Jan 30, 2026", type: "Payment",   icon: "card",          color: "#22C55E", bg: "#DCFCE7" },
-  { id: 5, property: "Sunset Villa",   amount: "—",       date: "Jan 15, 2026", type: "Statement", icon: "document-text", color: "#6C63FF", bg: "#EEECFF" },
+  {
+    id: 1,
+    property: "Mountain Cabin",
+    amount: "-₵3,200",
+    date: "Feb 22, 2026",
+    type: "Payment",
+    icon: "card",
+    color: "#22C55E",
+    bg: "#DCFCE7",
+  },
+  {
+    id: 2,
+    property: "Downtown Apt",
+    amount: "-₵1,850",
+    date: "Feb 10, 2026",
+    type: "Payment",
+    icon: "card",
+    color: "#22C55E",
+    bg: "#DCFCE7",
+  },
+  {
+    id: 3,
+    property: "Downtown Apt",
+    amount: "—",
+    date: "Feb 8, 2026",
+    type: "Statement",
+    icon: "document-text",
+    color: "#6C63FF",
+    bg: "#EEECFF",
+  },
+  {
+    id: 4,
+    property: "Sunset Villa",
+    amount: "-₵2,450",
+    date: "Jan 30, 2026",
+    type: "Payment",
+    icon: "card",
+    color: "#22C55E",
+    bg: "#DCFCE7",
+  },
+  {
+    id: 5,
+    property: "Sunset Villa",
+    amount: "—",
+    date: "Jan 15, 2026",
+    type: "Statement",
+    icon: "document-text",
+    color: "#6C63FF",
+    bg: "#EEECFF",
+  },
 ];
 
 // ── Chat messages (transactions chat view) ──────────────────────────
@@ -175,9 +238,18 @@ export const baseMessages: ChatMessage[] = [
 
 // ── Months (used by StatementRequestModal) ──────────────────────────
 export const MONTHS = [
-  "January", "February", "March", "April",
-  "May", "June", "July", "August",
-  "September", "October", "November", "December",
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 // ── Notifications ───────────────────────────────────────────────────
@@ -185,10 +257,10 @@ export const notificationTypeMeta: Record<
   NotifType,
   { icon: string; color: string; bg: string }
 > = {
-  invoice:   { icon: "document-text",    color: "#D97706", bg: "#FEF3C7" },
-  payment:   { icon: "checkmark-circle", color: "#22C55E", bg: "#DCFCE7" },
-  statement: { icon: "document",         color: "#6C63FF", bg: "#EEECFF" },
-  reminder:  { icon: "alarm-outline",    color: "#00CEC8", bg: "#E6FAFA" },
+  invoice: { icon: "document-text", color: "#D97706", bg: "#FEF3C7" },
+  payment: { icon: "checkmark-circle", color: "#22C55E", bg: "#DCFCE7" },
+  statement: { icon: "document", color: "#6C63FF", bg: "#EEECFF" },
+  reminder: { icon: "alarm-outline", color: "#00CEC8", bg: "#2b2a33" },
 };
 
 export const sampleNotifications: Notification[] = [
@@ -236,11 +308,46 @@ export const sampleNotifications: Notification[] = [
 
 // ── Support contact info ────────────────────────────────────────────
 export const contactInfo: ContactInfo[] = [
-  { id: 1, label: "Phone",       value: "+1 (305) 555-0199",                    icon: "call",                color: "#22C55E", bg: "#DCFCE7" },
-  { id: 2, label: "Email",       value: "support@propertytax.com",              icon: "mail",                color: "#6C63FF", bg: "#EEECFF" },
-  { id: 3, label: "WhatsApp",    value: "+1 (305) 555-0199",                    icon: "logo-whatsapp",       color: "#25D366", bg: "#DCFCE7" },
-  { id: 4, label: "Live Chat",   value: "Available in the app — Mon–Fri 8am–6pm", icon: "chatbubble-ellipses", color: "#00CEC8", bg: "#E6FAFA" },
-  { id: 5, label: "Help Center", value: "help.propertytax.com",                 icon: "help-circle",         color: "#F59E0B", bg: "#FEF3C7" },
+  {
+    id: 1,
+    label: "Phone",
+    value: "+1 (305) 555-0199",
+    icon: "call",
+    color: "#22C55E",
+    bg: "#DCFCE7",
+  },
+  {
+    id: 2,
+    label: "Email",
+    value: "support@propertytax.com",
+    icon: "mail",
+    color: "#6C63FF",
+    bg: "#EEECFF",
+  },
+  {
+    id: 3,
+    label: "WhatsApp",
+    value: "+1 (305) 555-0199",
+    icon: "logo-whatsapp",
+    color: "#25D366",
+    bg: "#DCFCE7",
+  },
+  {
+    id: 4,
+    label: "Live Chat",
+    value: "Available in the app — Mon–Fri 8am–6pm",
+    icon: "chatbubble-ellipses",
+    color: "#00CEC8",
+    bg: "#2b2a33",
+  },
+  {
+    id: 5,
+    label: "Help Center",
+    value: "help.propertytax.com",
+    icon: "help-circle",
+    color: "#F59E0B",
+    bg: "#FEF3C7",
+  },
 ];
 
 // ── Settings groups (legacy — kept for reference) ───────────────────
@@ -248,25 +355,29 @@ export const settingsGroups: SettingsGroup[] = [
   {
     section: "Account",
     items: [
-      { label: "Profile",       icon: "person-outline",           color: "#6C63FF" },
-      { label: "Notifications", icon: "notifications-outline",    color: "#F59E0B" },
-      { label: "Security",      icon: "shield-checkmark-outline", color: "#22C55E" },
+      { label: "Profile", icon: "person-outline", color: "#6C63FF" },
+      {
+        label: "Notifications",
+        icon: "notifications-outline",
+        color: "#F59E0B",
+      },
+      { label: "Security", icon: "shield-checkmark-outline", color: "#22C55E" },
     ],
   },
   {
     section: "Preferences",
     items: [
-      { label: "Payment Methods", icon: "card-outline",   color: "#00CEC8" },
-      { label: "Documents",       icon: "folder-outline", color: "#6C63FF" },
-      { label: "Language",        icon: "globe-outline",  color: "#64748B" },
+      { label: "Payment Methods", icon: "card-outline", color: "#00CEC8" },
+      { label: "Documents", icon: "folder-outline", color: "#6C63FF" },
+      { label: "Language", icon: "globe-outline", color: "#64748B" },
     ],
   },
   {
     section: "Support",
     items: [
       { label: "Help Center", icon: "help-circle-outline", color: "#F59E0B" },
-      { label: "Contact Us",  icon: "mail-outline",        color: "#00CEC8" },
-      { label: "Sign Out",    icon: "log-out-outline",     color: "#EF4444" },
+      { label: "Contact Us", icon: "mail-outline", color: "#00CEC8" },
+      { label: "Sign Out", icon: "log-out-outline", color: "#EF4444" },
     ],
   },
 ];
@@ -278,16 +389,16 @@ export const mobileNetworks: {
   color: string;
   bg: string;
 }[] = [
-  { id: "mtn",     label: "MTN",         color: "#F59E0B", bg: "#FEF3C7" },
+  { id: "mtn", label: "MTN", color: "#F59E0B", bg: "#FEF3C7" },
   { id: "telecel", label: "TelecelCash", color: "#EF4444", bg: "#FEE2E2" },
-  { id: "aitel",   label: "AitelTigo",   color: "#3B82F6", bg: "#DBEAFE" },
+  { id: "aitel", label: "AitelTigo", color: "#3B82F6", bg: "#DBEAFE" },
 ];
 
 // ── Profile info rows (settings page) ──────────────────────────────
 export const profileRows: ProfileRow[] = [
-  { icon: "person-outline",   label: "Full Name",  value: "John Doe" },
-  { icon: "location-outline", label: "Location",   value: "Miami, FL 33101" },
-  { icon: "mail-outline",     label: "Email",      value: "john.doe@example.com" },
-  { icon: "call-outline",     label: "Phone",      value: "+1 (305) 555-0100" },
-  { icon: "card-outline",     label: "Account ID", value: "PRO-2026-00147" },
+  { icon: "person-outline", label: "Full Name", value: "John Doe" },
+  { icon: "location-outline", label: "Location", value: "Miami, FL 33101" },
+  { icon: "mail-outline", label: "Email", value: "john.doe@example.com" },
+  { icon: "call-outline", label: "Phone", value: "+1 (305) 555-0100" },
+  { icon: "card-outline", label: "Account ID", value: "PRO-2026-00147" },
 ];

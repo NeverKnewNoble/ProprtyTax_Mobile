@@ -6,6 +6,13 @@
 // export const siteURL = "http://10.0.2.2:8002"
 
 // Iphone
-// export const siteURL = "http://192.168.1.26:8002"
+// export const siteURL = "http://192.168.1.26:8002" 
 // house:
-export const siteURL = "http://192.168.8.110:8002"
+// export const siteURL = "http://192.168.8.100:8002"
+
+
+// remote
+// export const siteURL = "http://172.20.10.3:8002"
+
+// live site
+export const siteURL = "https://property.erpxpand.com/"  

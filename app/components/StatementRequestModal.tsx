@@ -1,20 +1,26 @@
+import { Property } from "@/types/property";
+import {
+    MonthYear,
+    PeriodMode,
+    StatementType,
+    SubmitPayload,
+} from "@/types/statement";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import {
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Modal,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { StatementType, PeriodMode, MonthYear, SubmitPayload } from "../../types/statement";
-import { Property } from "../../types/property";
-import { properties, MONTHS } from "../../utils/sampleData";
+import { MONTHS } from "../../utils/sampleData";
 
 type Props = {
   visible: boolean;
+  properties: Property[];
   onClose: () => void;
   onSubmit: (payload: SubmitPayload) => void;
 };
@@ -97,7 +103,11 @@ function StepIndicator({ current }: { current: number }) {
               </View>
               <Text
                 className={`text-[10px] mt-1 ${
-                  active ? "text-primary font-bold" : done ? "text-[#0F172A] font-bold" : "text-slate-300"
+                  active
+                    ? "text-primary font-bold"
+                    : done
+                      ? "text-[#0F172A] font-bold"
+                      : "text-slate-300"
                 }`}
               >
                 {label}
@@ -116,13 +126,31 @@ function StepIndicator({ current }: { current: number }) {
 }
 
 // ── Main Modal ──────────────────────────────────────────────────
-export default function StatementRequestModal({ visible, onClose, onSubmit }: Props) {
+function monthToFirstDay(my: MonthYear): string {
+  return `${my.year}-${String(my.month + 1).padStart(2, "0")}-01`;
+}
+
+function monthToLastDay(my: MonthYear): string {
+  const lastDay = new Date(my.year, my.month + 1, 0).getDate();
+  return `${my.year}-${String(my.month + 1).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
+}
+
+export default function StatementRequestModal({
+  visible,
+  properties,
+  onClose,
+  onSubmit,
+}: Props) {
   const insets = useSafeAreaInsets();
 
   const now = new Date();
   const [step, setStep] = useState(0);
-  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
-  const [statementType, setStatementType] = useState<StatementType | null>(null);
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(
+    null,
+  );
+  const [statementType, setStatementType] = useState<StatementType | null>(
+    null,
+  );
   const [periodMode, setPeriodMode] = useState<PeriodMode>("single");
   const [singleMonth, setSingleMonth] = useState<MonthYear>({
     month: now.getMonth(),
@@ -157,10 +185,23 @@ export default function StatementRequestModal({ visible, onClose, onSubmit }: Pr
         ? `${MONTHS[singleMonth.month]} ${singleMonth.year}`
         : `${MONTHS[fromMonth.month]} ${fromMonth.year} – ${MONTHS[toMonth.month]} ${toMonth.year}`;
 
+    const from_date =
+      periodMode === "single"
+        ? monthToFirstDay(singleMonth)
+        : monthToFirstDay(fromMonth);
+
+    const to_date =
+      periodMode === "single"
+        ? monthToLastDay(singleMonth)
+        : monthToLastDay(toMonth);
+
     onSubmit({
       property: selectedProperty.name,
+      propertyParcelId: selectedProperty.parcelId,
       statementType,
       period,
+      from_date,
+      to_date,
     });
     handleClose();
   };
@@ -179,7 +220,9 @@ export default function StatementRequestModal({ visible, onClose, onSubmit }: Pr
           <TouchableOpacity
             key={prop.id}
             className={`flex-row items-center rounded-[18px] p-4 border-[1.5px] ${
-              active ? "border-primary bg-[#F0FFFE]" : "border-transparent bg-[#F8FAFC]"
+              active
+                ? "border-primary bg-[#F0FFFE]"
+                : "border-transparent bg-[#F8FAFC]"
             }`}
             onPress={() => setSelectedProperty(prop)}
             activeOpacity={0.8}
@@ -197,7 +240,9 @@ export default function StatementRequestModal({ visible, onClose, onSubmit }: Pr
                 active ? "border-primary" : "border-slate-300"
               }`}
             >
-              {active && <View className="w-[10px] h-[10px] rounded-full bg-primary" />}
+              {active && (
+                <View className="w-[10px] h-[10px] rounded-full bg-primary" />
+              )}
             </View>
           </TouchableOpacity>
         );
@@ -225,7 +270,7 @@ export default function StatementRequestModal({ visible, onClose, onSubmit }: Pr
         value: "Billing",
         icon: "receipt",
         color: "#00CEC8",
-        bg: "#E6FAFA",
+        bg: "#2b2a33",
         desc: "Itemised billing summary with payment breakdowns and upcoming amounts",
       },
     ];
@@ -238,7 +283,9 @@ export default function StatementRequestModal({ visible, onClose, onSubmit }: Pr
             <TouchableOpacity
               key={opt.value}
               className={`flex-row items-center rounded-[18px] p-4 border-[1.5px] ${
-                active ? "border-primary bg-[#F0FFFE]" : "border-transparent bg-[#F8FAFC]"
+                active
+                  ? "border-primary bg-[#F0FFFE]"
+                  : "border-transparent bg-[#F8FAFC]"
               }`}
               onPress={() => setStatementType(opt.value)}
               activeOpacity={0.8}
@@ -264,7 +311,9 @@ export default function StatementRequestModal({ visible, onClose, onSubmit }: Pr
                   active ? "border-primary" : "border-slate-300"
                 }`}
               >
-                {active && <View className="w-[10px] h-[10px] rounded-full bg-primary" />}
+                {active && (
+                  <View className="w-[10px] h-[10px] rounded-full bg-primary" />
+                )}
               </View>
             </TouchableOpacity>
           );
@@ -281,12 +330,13 @@ export default function StatementRequestModal({ visible, onClose, onSubmit }: Pr
         {(["single", "range"] as PeriodMode[]).map((m) => {
           const active = periodMode === m;
           const label = m === "single" ? "Single Month" : "Date Range";
-          const icon = m === "single" ? "calendar-outline" : "calendar-clear-outline";
+          const icon =
+            m === "single" ? "calendar-outline" : "calendar-clear-outline";
           return (
             <TouchableOpacity
               key={m}
               className={`flex-1 py-2.5 rounded-xl flex-row items-center justify-center gap-2 ${
-                active ? "bg-[#E6FAFA]" : ""
+                active ? "bg-[#2b2a33]" : ""
               }`}
               onPress={() => setPeriodMode(m)}
               activeOpacity={0.8}
@@ -391,7 +441,9 @@ export default function StatementRequestModal({ visible, onClose, onSubmit }: Pr
                 disabled={!canNext}
               >
                 <Ionicons name="send-outline" size={18} color="#fff" />
-                <Text className="text-white text-[15px] font-bold">Submit Request</Text>
+                <Text className="text-white text-[15px] font-bold">
+                  Submit Request
+                </Text>
               </TouchableOpacity>
             ) : (
               <TouchableOpacity
@@ -402,7 +454,9 @@ export default function StatementRequestModal({ visible, onClose, onSubmit }: Pr
                 activeOpacity={0.85}
                 disabled={!canNext}
               >
-                <Text className="text-white text-[15px] font-bold">Continue</Text>
+                <Text className="text-white text-[15px] font-bold">
+                  Continue
+                </Text>
                 <Ionicons name="arrow-forward" size={18} color="#fff" />
               </TouchableOpacity>
             )}

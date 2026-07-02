@@ -1,23 +1,27 @@
+import { Property } from "@/types/property";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";
 import {
-  ActivityIndicator,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import PropertyModal from "../components/PropertyModal";
-import PaymentModal from "../components/PaymentModal";
-import { getTypeStyle, isPaid, mapUserProperty } from "../../utils/propertyUtils";
 import { fetchUsersProperties } from "../../utils/frappe_services/getUsersProperties";
+import {
+    getTypeStyle,
+    isPaid,
+    mapUserProperty,
+} from "../../utils/propertyUtils";
+import PaymentModal from "../components/PaymentModal";
 import PropertyEmptyState from "../components/PropertyEmptyState";
+import PropertyModal from "../components/PropertyModal";
 import TabBar from "../components/tab-bar";
-import { Property } from "../../types/property";
 
 export default function PropertyScreen() {
   const [selected, setSelected] = useState<Property | null>(null);
@@ -34,7 +38,7 @@ export default function PropertyScreen() {
         }
         setLoading(false);
       });
-    }, [])
+    }, []),
   );
 
   return (
@@ -53,17 +57,17 @@ export default function PropertyScreen() {
         </View>
         <TouchableOpacity
           onPress={() => router.push("/pages/add_property/add_property")}
-          className="w-10 h-10 rounded-xl bg-[#E6FAFA] items-center justify-center"
+          className="w-10 h-10 rounded-xl bg-[#2b2a33] items-center justify-center"
           activeOpacity={0.8}
         >
-          <Ionicons name="add" size={22} color="#00CEC8" />
+          <Ionicons name="add" size={22} color="#b5cc3b" />
         </TouchableOpacity>
       </View>
 
       {/* ── Empty state or list ─────────────────── */}
       {loading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#00CEC8" />
+          <ActivityIndicator size="large" color="#b5cc3b" />
         </View>
       ) : properties.length === 0 ? (
         <PropertyEmptyState />
@@ -78,9 +82,15 @@ export default function PropertyScreen() {
             const paid = isPaid(prop.due);
 
             return (
-              <View key={prop.id} className="bg-white rounded-[20px] p-[18px]" style={styles.card}>
+              <TouchableOpacity
+                key={prop.id}
+                className="bg-white rounded-[20px] p-[18px]"
+                style={styles.card}
+                activeOpacity={0.8}
+                onPress={() => setSelected(prop)}
+              >
                 {/* Name + due badge */}
-                <View className="flex-row justify-between items-start mb-3">
+                <View className="flex-row justify-between items-start mb-4">
                   <View className="flex-1 mr-3">
                     <Text className="text-[17px] font-bold text-slate-900 mb-0.5">
                       {prop.name}
@@ -102,8 +112,8 @@ export default function PropertyScreen() {
                   </View>
                 </View>
 
-                {/* Type tag + Balance */}
-                <View className="flex-row items-center justify-between mb-4">
+                {/* Type tag + View button */}
+                <View className="flex-row items-center justify-between">
                   <View
                     className="px-3 py-1 rounded-full"
                     style={{ backgroundColor: tc.bg }}
@@ -115,40 +125,13 @@ export default function PropertyScreen() {
                       {prop.type}
                     </Text>
                   </View>
-                  <View className="items-end">
-                    <Text className="text-[10px] text-slate-400 font-medium mb-0.5">
-                      Balance
-                    </Text>
-                    <Text className="text-[17px] font-extrabold text-slate-900">
-                      {prop.balance}
-                    </Text>
-                  </View>
-                </View>
-
-                {/* Progress bar */}
-                <View className="mb-4">
-                  <View className="flex-row justify-between mb-1.5">
-                    <Text className="text-[12px] text-slate-400">
-                      Payment Progress
-                    </Text>
-                    <Text className="text-[12px] font-semibold text-slate-700">
-                      {prop.progress}%
-                    </Text>
-                  </View>
-                  <View className="h-[6px] bg-slate-100 rounded-full overflow-hidden">
-                    <View
-                      className={`h-[6px] rounded-full ${paid ? "bg-green-500" : "bg-primary"}`}
-                      style={{ width: `${prop.progress}%` as any }}
-                    />
-                  </View>
-                </View>
-
-                {/* View button */}
-                <View className="flex-row justify-end">
                   <TouchableOpacity
                     className="flex-row items-center gap-1.5 bg-[#0B1426] px-5 py-[10px] rounded-xl"
                     activeOpacity={0.85}
-                    onPress={() => setSelected(prop)}
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      setSelected(prop);
+                    }}
                   >
                     <Text className="text-white text-[13px] font-bold">
                       View
@@ -156,7 +139,7 @@ export default function PropertyScreen() {
                     <Ionicons name="arrow-forward" size={14} color="#fff" />
                   </TouchableOpacity>
                 </View>
-              </View>
+              </TouchableOpacity>
             );
           })}
         </ScrollView>

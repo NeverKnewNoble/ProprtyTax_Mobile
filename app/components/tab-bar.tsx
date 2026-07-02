@@ -37,7 +37,10 @@ export default function TabBar() {
   return (
     <View
       className="flex-row bg-white pt-[10px] border-t border-[#F1F5F9]"
-      style={[styles.shadow, { paddingBottom: insets.bottom > 0 ? insets.bottom : 12 }]}
+      style={[
+        styles.shadow,
+        { paddingBottom: insets.bottom > 0 ? insets.bottom : 12 },
+      ]}
     >
       {TABS.map((tab) => {
         const active = pathname === tab.route;
@@ -50,13 +53,13 @@ export default function TabBar() {
           >
             <View
               className={`w-11 h-8 rounded-[10px] items-center justify-center ${
-                active ? "bg-[#E6FAFA]" : ""
+                active ? "bg-[#2b2a33]" : ""
               }`}
             >
               <Ionicons
                 name={active ? tab.iconActive : tab.icon}
                 size={22}
-                color={active ? "#00CEC8" : "#94A3B8"}
+                color={active ? "#b5cc3b" : "#94A3B8"}
               />
             </View>
             <Text

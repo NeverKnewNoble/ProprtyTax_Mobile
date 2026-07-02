@@ -13,8 +13,8 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Property } from "../../types/property";
-import { MobileNetwork, PaymentScreen, PaymentTab } from "../../types/payment";
+import { Property } from "@/types/property";
+import { MobileNetwork, PaymentScreen, PaymentTab } from "@/types/payment";
 import { mobileNetworks, properties } from "../../utils/sampleData";
 
 type Props = {

@@ -3,20 +3,22 @@ import { FoundProperty, UserProperty } from "@/types/property";
 import { addPropertyToUser } from "@/utils/frappe_services/add_property";
 import { findProperty } from "@/utils/frappe_services/find_property";
 import { Ionicons } from "@expo/vector-icons";
+import { Camera, CameraView } from "expo-camera";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    KeyboardAvoidingView,
+    Modal,
+    Platform,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FoundPropertyModal from "../../components/FoundPropertyModal";
@@ -49,6 +51,89 @@ export default function AddPropertyScreen() {
     null,
   );
   const [rawPropertyId, setRawPropertyId] = useState<string>("");
+  const [showCamera, setShowCamera] = useState(false);
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    checkCameraPermission();
+  }, []);
+
+  const checkCameraPermission = async () => {
+    try {
+      const { status } = await Camera.getCameraPermissionsAsync();
+      console.log("Initial camera permission status:", status);
+      setHasPermission(status === "granted");
+    } catch (error) {
+      console.error("Error checking camera permission:", error);
+      setHasPermission(false);
+    }
+  };
+
+  const requestCameraPermission = async () => {
+    try {
+      console.log("Requesting camera permission...");
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      console.log("Camera permission status:", status);
+      setHasPermission(status === "granted");
+      return status === "granted";
+    } catch (error) {
+      console.error("Error requesting camera permission:", error);
+      setHasPermission(false);
+      return false;
+    }
+  };
+
+  const handleEnableCamera = async () => {
+    console.log("Enable camera clicked");
+    if (hasPermission === null) {
+      // Request permission first
+      const hasPermission = await requestCameraPermission();
+      if (hasPermission) {
+        console.log("Permission granted, showing camera");
+        setShowCamera(true);
+      }
+    } else if (hasPermission) {
+      console.log("Permission already granted, showing camera");
+      setShowCamera(true);
+    } else {
+      Alert.alert(
+        "Camera Permission Required",
+        "Please grant camera permission to scan property codes.",
+        [{ text: "OK" }],
+      );
+    }
+  };
+
+  const handleBarCodeScanned = ({
+    type,
+    data,
+  }: {
+    type: string;
+    data: string;
+  }) => {
+    console.log(`Barcode scanned: ${data} (type: ${type})`);
+    setShowCamera(false);
+    setCode(data);
+
+    // Auto-search when barcode is scanned
+    setSearching(true);
+    findProperty({ search_term: data })
+      .then((result) => {
+        setSearching(false);
+        if (result.success) {
+          setRawPropertyId(result.property.property_id);
+          setFoundProperty(mapToFoundProperty(result.property));
+          setFoundModal(true);
+        } else {
+          setNotFoundModal(true);
+        }
+      })
+      .catch((err) => {
+        setSearching(false);
+        console.error("Search error:", err);
+        Alert.alert("Error", "Failed to search for property");
+      });
+  };
 
   const handleSearch = async () => {
     const term = code.trim();
@@ -122,7 +207,7 @@ export default function AddPropertyScreen() {
             <TouchableOpacity
               key={m}
               className={`flex-1 py-3 rounded-xl flex-row items-center justify-center gap-2 ${
-                active ? "bg-[#E6FAFA]" : ""
+                active ? "bg-[#2b2a33]" : ""
               }`}
               onPress={() => setMode(m)}
               activeOpacity={0.8}
@@ -155,7 +240,7 @@ export default function AddPropertyScreen() {
           >
             {/* Input card */}
             <View className="bg-white rounded-[24px] p-6" style={styles.card}>
-              <View className="w-14 h-14 rounded-2xl bg-[#E6FAFA] items-center justify-center mb-5 self-center">
+              <View className="w-14 h-14 rounded-2xl bg-[#2b2a33] items-center justify-center mb-5 self-center">
                 <Ionicons name="home-outline" size={28} color="#00CEC8" />
               </View>
               <Text className="text-[18px] font-bold text-slate-900 text-center mb-1">
@@ -262,9 +347,9 @@ export default function AddPropertyScreen() {
               </Text>
 
               <TouchableOpacity
-                className="bg-[#E6FAFA] px-7 py-3 rounded-full flex-row items-center gap-2"
+                className="bg-[#2b2a33] px-7 py-3 rounded-full flex-row items-center gap-2"
                 activeOpacity={0.8}
-                onPress={() => setFoundModal(true)}
+                onPress={handleEnableCamera}
               >
                 <Ionicons name="camera" size={16} color="#00CEC8" />
                 <Text className="text-primary font-bold text-[13px]">
@@ -317,6 +402,62 @@ export default function AddPropertyScreen() {
           setCode("");
         }}
       />
+
+      {/* Camera Modal */}
+      <Modal
+        visible={showCamera}
+        animationType="slide"
+        onRequestClose={() => setShowCamera(false)}
+      >
+        <View className="flex-1 bg-black">
+          {hasPermission ? (
+            <CameraView
+              style={{ flex: 1 }}
+              onBarcodeScanned={handleBarCodeScanned}
+              barcodeScannerSettings={{
+                barcodeTypes: ["qr", "code128", "code39", "ean13", "upc_a"],
+              }}
+            />
+          ) : (
+            <View className="flex-1 items-center justify-center">
+              <Text className="text-white text-center px-6">
+                Camera permission is required to scan barcodes.
+              </Text>
+              <TouchableOpacity
+                className="mt-4 bg-primary px-6 py-3 rounded-full"
+                onPress={handleEnableCamera}
+              >
+                <Text className="text-white font-bold">Grant Permission</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* Camera overlay */}
+          <View className="absolute top-12 left-0 right-0 flex-row justify-between px-6">
+            <TouchableOpacity
+              className="w-10 h-10 rounded-full bg-black/50 items-center justify-center"
+              onPress={() => setShowCamera(false)}
+            >
+              <Ionicons name="close" size={24} color="#fff" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Scanning frame */}
+          <View className="absolute inset-0 items-center justify-center">
+            <View className="w-[250px] h-[250px] border-2 border-primary rounded-lg">
+              {/* Corner brackets */}
+              <View className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-primary rounded-tl-lg" />
+              <View className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-primary rounded-tr-lg" />
+              <View className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-primary rounded-bl-lg" />
+              <View className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-primary rounded-br-lg" />
+            </View>
+
+            <Text className="text-white text-center mt-4 text-sm">
+              Align barcode within frame
+            </Text>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }

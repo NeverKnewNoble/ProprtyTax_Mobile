@@ -1,4 +1,5 @@
 import { useUser } from "@/contexts/UserContext";
+import { Invoice, Property } from "@/types/property";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
 import React, { useCallback, useRef, useState } from "react";
@@ -14,8 +15,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Property } from "../../types/property";
 import { fetchUsersProperties } from "../../utils/frappe_services/getUsersProperties";
+import { fetchPropertyInvoices } from "../../utils/frappe_services/property_invoices";
 import { mapUserProperty } from "../../utils/propertyUtils";
 import { quickActions } from "../../utils/sampleData";
 import NotificationsModal from "../components/NotificationsModal";
@@ -47,9 +48,52 @@ export default function HomeScreen() {
   useFocusEffect(
     useCallback(() => {
       setLoading(true);
-      fetchUsersProperties().then((result) => {
+      fetchUsersProperties().then(async (result) => {
         if (result.success) {
-          setProperties(result.properties.map(mapUserProperty));
+          const base = result.properties.map(mapUserProperty);
+
+          const enriched = await Promise.all(
+            base.map(async (prop) => {
+              const res = await fetchPropertyInvoices(prop.parcelId);
+              if (!res.success || res.invoices.length === 0) return prop;
+
+              // Group by billing year, pick latest
+              const byYear: Record<string, Invoice[]> = {};
+              for (const inv of res.invoices) {
+                const y = inv.custom_billing_year ?? "Unknown";
+                if (!byYear[y]) byYear[y] = [];
+                byYear[y].push(inv);
+              }
+              const latestYear = Object.keys(byYear).sort(
+                (a, b) => Number(b) - Number(a),
+              )[0];
+              const latest = byYear[latestYear];
+
+              const total = latest.reduce((s, i) => s + i.grand_total, 0);
+              const outstanding = latest.reduce(
+                (s, i) => s + i.outstanding_amount,
+                0,
+              );
+              const progress =
+                total > 0
+                  ? Math.round(((total - outstanding) / total) * 100)
+                  : 100;
+
+              return {
+                ...prop,
+                taxYear: latestYear,
+                balance:
+                  outstanding > 0
+                    ? `GHS ${outstanding.toLocaleString("en-GH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                    : "Paid",
+                due: outstanding === 0 ? "Paid" : "Unpaid",
+                dueDate: latest[0]?.due_date ?? "—",
+                progress,
+              };
+            }),
+          );
+
+          setProperties(enriched);
         }
         setLoading(false);
       });
@@ -57,8 +101,8 @@ export default function HomeScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0B1426]" edges={["top"]}>
-      <StatusBar barStyle="light-content" backgroundColor="#0B1426" />
+    <SafeAreaView className="flex-1 bg-[#2b2a33]" edges={["top"]}>
+      <StatusBar barStyle="light-content" backgroundColor="#2b2a33" />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -66,7 +110,7 @@ export default function HomeScreen() {
         className="bg-slate-100"
       >
         {/* ── Header ─────────────────────────────────── */}
-        <View className="bg-[#0B1426] pt-2 pb-6">
+        <View className="bg-[#2b2a33] pt-2 pb-6">
           {/* Top row */}
           <View className="flex-row justify-between items-center px-6 mb-5">
             <View>
@@ -96,7 +140,7 @@ export default function HomeScreen() {
                 alignItems: "center",
               }}
             >
-              <ActivityIndicator size="large" color="#00CEC8" />
+              <ActivityIndicator size="large" className="text-primary" />
             </View>
           ) : properties.length === 0 ? (
             <View
@@ -245,7 +289,7 @@ export default function HomeScreen() {
               label: "Properties",
               value: loading ? "…" : `${properties.length}`,
               icon: "home" as const,
-              color: "#00CEC8",
+              className: "text-primary",
             },
             {
               label: "Payments",

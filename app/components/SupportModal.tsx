@@ -1,10 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import {
-  Modal,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Modal, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { contactInfo } from "../../utils/sampleData";
 
@@ -66,7 +61,11 @@ export default function SupportModal({ visible, onClose }: Props) {
                   className="w-9 h-9 rounded-[10px] items-center justify-center shrink-0"
                   style={{ backgroundColor: item.bg }}
                 >
-                  <Ionicons name={item.icon as any} size={17} color={item.color} />
+                  <Ionicons
+                    name={item.icon as any}
+                    size={17}
+                    color={item.color}
+                  />
                 </View>
 
                 {/* Label + value */}
@@ -83,8 +82,8 @@ export default function SupportModal({ visible, onClose }: Props) {
           </View>
 
           {/* Office hours */}
-          <View className="mx-5 mt-4 rounded-2xl bg-[#E6FAFA] flex-row items-center gap-3 px-4 py-3.5">
-            <Ionicons name="time-outline" size={18} color="#00CEC8" />
+          <View className="mx-5 mt-4 rounded-2xl bg-[#2b2a33] flex-row items-center gap-3 px-4 py-3.5">
+            <Ionicons name="time-outline" size={18} color="#b5cc3b" />
             <Text className="text-[12px] text-[#00858080] font-medium flex-1 leading-5">
               Office hours: Mon – Fri, 8:00 AM – 6:00 PM EST
             </Text>

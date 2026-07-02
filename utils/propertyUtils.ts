@@ -1,4 +1,4 @@
-import { Property, PropertyType, UserProperty } from "../types/property";
+import { Property, PropertyType, UserProperty } from "@/types/property";
 import { TYPE_STYLE } from "./sampleData";
 
 export const isPaid = (due: string): boolean => due === "Paid";

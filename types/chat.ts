@@ -9,6 +9,8 @@ export type ChatMessage = {
   property: string;
   amount?: string;
   dueDate?: string;
+  billingYear?: string;
+  invoiceNumber?: string;
   statementType?: string;
   period?: string;
   date: string;

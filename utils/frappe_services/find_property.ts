@@ -1,15 +1,7 @@
-import { UserProperty } from "@/types/property";
 import { api } from "@/utils/config/api_client";
+import { FindPropertyParams, FindPropertyResult } from "@/types/findProperty";
 
-type FindPropertyParams = {
-  search_term?: string;
-  gps_id?: string;
-  property_id?: string;
-};
-
-export type FindPropertyResult =
-  | { success: true; property: UserProperty }
-  | { success: false; message: string };
+export type { FindPropertyParams, FindPropertyResult };
 
 export async function findProperty(
   params: FindPropertyParams

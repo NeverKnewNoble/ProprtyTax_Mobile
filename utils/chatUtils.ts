@@ -1,4 +1,4 @@
-import { ChatMessage } from "../types/chat";
+import { ChatMessage } from "@/types/chat";
 
 export const MONTH_LABELS = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",

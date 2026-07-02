@@ -1,9 +1,7 @@
-import { UserProperty } from "@/types/property";
 import { api } from "@/utils/config/api_client";
+import { GetPropertiesResult } from "@/types/getUsersProperties";
 
-export type GetPropertiesResult =
-  | { success: true; properties: UserProperty[] }
-  | { success: false; message: string };
+export type { GetPropertiesResult };
 
 export async function fetchUsersProperties(): Promise<GetPropertiesResult> {
   try {

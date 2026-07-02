@@ -13,7 +13,7 @@ import Svg, {
   Stop,
   Text as SvgText,
 } from "react-native-svg";
-import { MobileNetwork } from "../../types/payment";
+import { MobileNetwork } from "@/types/payment";
 
 // ── MTN ────────────────────────────────────────────────────────────────────
 // Yellow brand, bold "mtn" wordmark with signature mountain wave

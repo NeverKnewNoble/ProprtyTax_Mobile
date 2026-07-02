@@ -36,6 +36,33 @@ export type UserProperty = {
   modified: string;
 };
 
+export type InvoicePropertyDetails = {
+  property_id: string;
+  full_name: string;
+  property_address: string | null;
+  gps_id: string;
+};
+
+export type Invoice = {
+  name: string;
+  customer: string;
+  customer_name: string;
+  posting_date: string;
+  due_date: string;
+  grand_total: number;
+  outstanding_amount: number;
+  status: string;
+  custom_property: string;
+  custom_zone: string;
+  custom_billing_year: string;
+  custom_property_type: string;
+  custom_property_owner_email: string | null;
+  custom_property_owner_mobile_number: string;
+  creation: string;
+  modified: string;
+  property_details: InvoicePropertyDetails;
+};
+
 export type FoundProperty = {
   name: string;
   address: string;
